@@ -1,0 +1,38 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="32dp"
+    tools:context="com.example.pokedb.fragment.PokeContentFragment">
+
+    <ImageView
+        android:id="@+id/poke_image"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/poke_001"/>
+
+    <TextView
+        android:id="@+id/poke_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@id/poke_image"
+        android:padding="20dp"
+        android:text="#001"
+        android:textSize="24sp"
+        android:textColor="@color/colorPrimaryText"/>
+
+    <TextView
+        android:id="@+id/poke_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/poke_id"
+        android:paddingLeft="20dp"
+        android:text="妙蛙种子"
+        android:textSize="24sp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/colorPrimaryText"/>
+
+</RelativeLayout>
