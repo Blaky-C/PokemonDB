@@ -1,11 +1,12 @@
 package com.example.pokedb.Adapter;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.database.Cursor;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.example.pokedb.PokeContentActivity;
 import com.example.pokedb.R;
 import com.example.pokedb.fragment.PokeContentFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,25 +27,32 @@ import java.util.List;
 
 public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
 
-    private List<Pokemon> pokeList;
+    private List<Pokemon> pokeList = new ArrayList<>();
     private AppCompatActivity activity;
 
     static class ViewHolder extends RecyclerView.ViewHolder{
         TextView pokeName;
         TextView pokeId;
         ImageView pokeImage;
+        View view;
 
         public ViewHolder(View view){
             super(view);
             pokeId = (TextView)view.findViewById(R.id.poke_id);
             pokeName = (TextView)view.findViewById(R.id.poke_name);
             pokeImage = (ImageView)view.findViewById(R.id.poke_image);
+            this.view = view;
         }
     }
 
-    public PokeAdapter(Activity activity, List<Pokemon> pokeList){
+    public PokeAdapter(Activity activity, Cursor c){
         this.activity = (AppCompatActivity)activity;
-        this.pokeList = pokeList;
+        int i=1;
+        while (c.moveToNext()){
+            pokeList.add(new Pokemon(i++, c.getString(1), c.getString(2), c.getString(3)));
+        }
+        c.close();
+
     }
 
     @Override
@@ -53,6 +62,8 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //获取Pokemon对应的
+                int id = holder.getAdapterPosition()+1;
                 Pokemon pokemon = pokeList.get(holder.getAdapterPosition());
                 boolean isTwo = view.getRootView().findViewById(R.id.poke_content_layout)!=null;
                 if (!isTwo){
@@ -66,11 +77,11 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
                     pokeContentFragment.refresh(pokemon.getId(), pokemon.getName(), newResource);*/
 
                     //使用FrameLayout对片段进行替换
-                    String newContentImage = "poke_"+pokemon.getId().substring(1);
-                    int newResource = view.getResources().getIdentifier(newContentImage, "drawable", view.getContext().getPackageName());
+                    //获取图片资源
+                    int imageResource = view.getResources().getIdentifier(Pokemon.getRawImageName(id), "drawable", view.getContext().getPackageName());
                     //pokeContentFragment.refresh(pokemon.getId(), pokemon.getName(), newResource);
 
-                    PokeContentFragment pokeContentFragment = new PokeContentFragment(pokemon.getId(), pokemon.getName(), newResource);
+                    PokeContentFragment pokeContentFragment = new PokeContentFragment("#"+Pokemon.getId(id), pokemon.getC_name(), imageResource);
                     FragmentManager fragmentManager =activity.getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.poke_content_layout, pokeContentFragment);
@@ -86,9 +97,13 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Pokemon pokemon = pokeList.get(position);
-        holder.pokeId.setText(pokemon.getId());
-        holder.pokeName.setText(pokemon.getName());
-        holder.pokeImage.setImageResource(pokemon.getImageId());
+        holder.pokeId.setText("#"+Pokemon.getId(position+1));
+        holder.pokeName.setText(pokemon.getC_name());
+
+        View view = holder.view;
+        int imageResource = view.getResources().getIdentifier(Pokemon.getHgssImageName(position+1), "drawable", view.getContext().getPackageName());
+
+        holder.pokeImage.setImageResource(imageResource);
     }
 
     @Override

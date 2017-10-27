@@ -19,11 +19,6 @@
         android:layout_height="match_parent"
         android:layout_weight="2">
 
-        <!--<fragment
-            android:id="@+id/poke_content"
-            android:name="com.example.pokedb.fragment.PokeContentFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>-->
     </FrameLayout>
 
 </LinearLayout>

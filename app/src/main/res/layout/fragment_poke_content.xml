@@ -10,7 +10,7 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_alignParentRight="true"
-        android:src="@drawable/poke_001"/>
+        android:src="@drawable/raw_001"/>
 
     <TextView
         android:id="@+id/poke_id"
