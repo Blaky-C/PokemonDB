@@ -36,7 +36,7 @@ public class PokeRecyclerFragment extends Fragment {
         //开始时从数据库查询数据
         dbHelper = new PokeDBHelper(getContext(), "PokeDB.db", null, 1);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String sql_query = "select * from poke_table";
+        String sql_query = "select * from basic_info";
         cursor = db.rawQuery(sql_query, new String[]{});
 
         //初始化RecyclerView

@@ -2,17 +2,18 @@ package com.example.pokedb.Adapter;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.pokedb.Http.HttpUtil;
 import com.example.pokedb.Object.Pokemon;
 import com.example.pokedb.PokeContentActivity;
 import com.example.pokedb.R;
@@ -34,6 +35,7 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
         TextView pokeName;
         TextView pokeId;
         ImageView pokeImage;
+
         View view;
 
         public ViewHolder(View view){
@@ -49,7 +51,7 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
         this.activity = (AppCompatActivity)activity;
         int i=1;
         while (c.moveToNext()){
-            pokeList.add(new Pokemon(i++, c.getString(1), c.getString(2), c.getString(3)));
+            pokeList.add(new Pokemon(i++, c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getString(5)));
         }
         c.close();
 
@@ -78,10 +80,11 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
 
                     //使用FrameLayout对片段进行替换
                     //获取图片资源
-                    int imageResource = view.getResources().getIdentifier(Pokemon.getRawImageName(id), "drawable", view.getContext().getPackageName());
+                    //int imageResource = view.getResources().getIdentifier(Pokemon.getRawImageName(id), "drawable", view.getContext().getPackageName());
                     //pokeContentFragment.refresh(pokemon.getId(), pokemon.getName(), newResource);
+                    String imageResource = "";
 
-                    PokeContentFragment pokeContentFragment = new PokeContentFragment("#"+Pokemon.getId(id), pokemon.getC_name(), imageResource);
+                    PokeContentFragment pokeContentFragment = new PokeContentFragment("#"+Pokemon.getId(id), pokemon.getC_name(), imageResource, new AppCompatActivity());
                     FragmentManager fragmentManager =activity.getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.poke_content_layout, pokeContentFragment);
@@ -95,15 +98,26 @@ public class PokeAdapter extends RecyclerView.Adapter<PokeAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         Pokemon pokemon = pokeList.get(position);
-        holder.pokeId.setText("#"+Pokemon.getId(position+1));
+        holder.pokeId.setText(pokemon.getId().substring(0, 4));
         holder.pokeName.setText(pokemon.getC_name());
 
         View view = holder.view;
-        int imageResource = view.getResources().getIdentifier(Pokemon.getHgssImageName(position+1), "drawable", view.getContext().getPackageName());
+        String id = Pokemon.getId(position+1)+".00.png";
+        String dirAddress = "http://www.craftmanjack.cn/PokeDB/Pictures/hgss/";
 
-        holder.pokeImage.setImageResource(imageResource);
+        HttpUtil.getServerPic(dirAddress + id, new HttpUtil.PicCallbackListener() {
+            @Override
+            public void onFinish(Bitmap b) {
+                holder.pokeImage.setImageBitmap(b);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
